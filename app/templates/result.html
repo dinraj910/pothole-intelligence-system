@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Detection Result</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+	<div class="page">
+		<header class="hero compact">
+			<div>
+				<p class="eyebrow">Result</p>
+				<h1>Detected Potholes</h1>
+				<p class="lede">Original vs. model output using YOLOv8 with conf=0.05.</p>
+			</div>
+			<a href="{{ url_for('index') }}" class="secondary">Upload Another</a>
+		</header>
+
+		<main class="card results">
+			<div class="image-pair">
+				<div class="image-box">
+					<p class="muted">Original</p>
+					<img src="{{ original_image }}" alt="Original upload">
+				</div>
+				<div class="image-box">
+					<p class="muted">Detection</p>
+					<img src="{{ result_image }}" alt="Detection result">
+				</div>
+			</div>
+			<div class="actions">
+				<a href="{{ url_for('index') }}" class="primary">Upload Another</a>
+			</div>
+		</main>
+	</div>
+</body>
+</html>
