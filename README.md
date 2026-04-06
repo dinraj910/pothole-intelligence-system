@@ -1,19 +1,31 @@
-<div align="center">
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=0:1f7aec,100:0a1931&text=Road%20Damage%20AI&fontColor=ffffff&fontSize=42&fontAlignY=35&desc=Multi-Model%20YOLOv8%20Ensemble%20%7C%20Live%20Camera%20and%20Image%20Analysis&descAlignY=56" alt="Header" />
+</p>
 
-<img src="https://capsule-render.vercel.app/api?type=waving&amp;height=200&amp;color=0:1f7aec,100:0a1931&amp;text=Road%20Damage%20AI&amp;fontColor=ffffff&amp;fontSize=42&amp;fontAlignY=35&amp;desc=Multi-Model%20YOLOv8%20Ensemble%20%7C%20Live%20Camera%20%26%20Image%20Analysis&amp;descAlignY=56" alt="Header" />
+<p align="center">
+  <a href="#">
+    <img src="https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge&logo=github" alt="Status" />
+  </a>
+  <a href="#license">
+    <img src="https://img.shields.io/badge/License-MIT-black?style=for-the-badge&logo=unlicense" alt="License" />
+  </a>
+  <a href="#-deployment">
+    <img src="https://img.shields.io/badge/Deploy-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white" alt="Deploy" />
+  </a>
+</p>
 
-[![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge&logo=github)](#) 
-[![License](https://img.shields.io/badge/License-MIT-black?style=for-the-badge&logo=unlicense)](#license) 
-[![Deploy](https://img.shields.io/badge/Deploy-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](#-deployment) 
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Flask-3.x-black?style=for-the-badge&logo=flask" alt="Flask" />
+  <img src="https://img.shields.io/badge/YOLOv8-Ultralytics-1f7aec?style=for-the-badge&logo=pythons" alt="YOLOv8" />
+  <img src="https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JS" />
+</p>
 
-[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](#tech-stack)
-[![Flask](https://img.shields.io/badge/Flask-3.x-black?style=for-the-badge&logo=flask)](#tech-stack)
-[![Ultralytics](https://img.shields.io/badge/YOLOv8-Ultralytics-1f7aec?style=for-the-badge&logo=pythons)](#tech-stack)
-[![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](#tech-stack)
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Manrope&weight=700&size=24&pause=1200&color=1F7AEC&center=true&vCenter=true&random=false&width=800&lines=🚀+3-Model+Consensus+Detection;📡+Real-time+Webcam+Inference;📊+Live+Damage+Area+Analytics;🎯+Production-ready+Flask+Architecture" alt="Typing SVG" />
+</p>
 
-<img src="https://readme-typing-svg.demolab.com?font=Manrope&amp;weight=700&amp;size=24&amp;pause=1200&amp;color=1F7AEC&amp;center=true&amp;vCenter=true&amp;random=false&amp;width=800&amp;lines=🚀+3-Model+Consensus+Detection;📡+Real-time+Webcam+Inference;📊+Live+Damage+Area+Analytics;🎯+Production-ready+Flask+Architecture" alt="Typing SVG" />
-
-</div>
+<br />
 
 ---
 
