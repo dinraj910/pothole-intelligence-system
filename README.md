@@ -98,6 +98,17 @@ graph TD
 
 ---
 
+## 📓 Training Notebooks
+
+The deep learning models powering this pipeline were trained and evaluated in the following notebooks. They contain the data visualization, cascaded transfer learning strategy, and metrics validation.
+
+| Notebook | Description |
+|----------|-------------|
+| 🔗 **[Multi-Model Ensemble Training](notebook/Road_Damage_MultiModel_Pipeline_final.ipynb)** | **(⭐ Core)** The final Phase 1 notebook. Contains the end-to-end cascaded training logic (COCO → Model A → Model B → Model C), cross-model NMS PoC, and ensemble thresholding experiments. |
+| 🔗 **[Initial Prototype Training](notebook/Pothole_Detection.ipynb)** | The initial baseline single-model YOLOv8 experiment on a basic pothole dataset to validate feasibility before upgrading to the 3-model paradigm. |
+
+---
+
 ## ⚡ Quick Start
 
 ### Prerequisites
@@ -157,6 +168,15 @@ To deploy:
 ![alt text](screenshots/10.png)
 ![alt text](screenshots/11.png)
 ![alt text](screenshots/12.png)
+
+
+![alt text](app/static/results/iStock-502561495_248a3c17_result.jpg)
+
+![alt text](app/static/results/Screenshot_2026-04-06_204643_48630d54_90b51139_result.png)
+
+![alt text](app/static/results/China_Drone_000630_34629bbe_result.jpg)
+
+![alt text](app/static/results/022018_pothole_02194a15_c34eaf57_result.jpg)
 
 ---
 
