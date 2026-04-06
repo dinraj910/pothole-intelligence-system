@@ -5,18 +5,35 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Detection Result — Road Damage AI</title>
 	<meta name="description" content="Road damage detection results from 3-model YOLOv8 ensemble analysis.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-	<div class="page">
-		<header class="hero compact">
-			<div>
-				<p class="eyebrow">🔬 Analysis Complete</p>
-				<h1>Detection Results</h1>
-				<p class="lede">Multi-model ensemble output with cross-model consensus.</p>
-			</div>
-			<a href="{{ url_for('index') }}" class="secondary">← New Analysis</a>
-		</header>
+<div class="page">
+
+	<!-- ── Top nav ─────────────────────────────────────────────── -->
+	<nav class="app-nav">
+		<a href="{{ url_for('dashboard') }}" class="nav-back">← Back to Dashboard</a>
+		<div class="nav-brand-small">
+			<span>🛣️</span>
+			<span>Road Damage AI</span>
+		</div>
+		<div class="nav-model-pills">
+			{% for m in models %}
+			<span class="model-pill" style="--mc: {{ m.color_hex }}">{{ m.short }}</span>
+			{% endfor %}
+		</div>
+	</nav>
+
+	<header class="hero compact">
+		<div>
+			<p class="eyebrow">🔬 Analysis Complete</p>
+			<h1>Detection Results</h1>
+			<p class="lede">Multi-model ensemble output with cross-model consensus.</p>
+		</div>
+		<a href="{{ url_for('upload_page') }}" class="secondary">🖼️ New Image</a>
+	</header>
 
 		<main class="card results">
 
