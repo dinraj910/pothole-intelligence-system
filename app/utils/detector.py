@@ -231,6 +231,79 @@ def run_inference(
     }
 
 
+def run_inference_on_array(image: np.ndarray, conf: float | None = None) -> dict:
+    """
+    Run the full multi-model pipeline on a numpy BGR image array.
+    Used by the live-camera API (no file I/O needed).
+
+    Returns the same structure as run_inference(), plus:
+        damage_pct — % of frame area covered by bounding boxes
+    """
+    models = _load_models()
+
+    h, w = image.shape[:2]
+    frame_area = h * w if h * w > 0 else 1
+
+    all_raw_detections = []
+    model_counts = {}
+
+    for mid, model in models.items():
+        info = MODEL_REGISTRY[mid]
+        threshold = conf if conf is not None else info["conf"]
+        results = model(image, conf=threshold, iou=0.45, verbose=False)
+        raw_count = 0
+
+        for result in results:
+            if result.boxes is None:
+                continue
+            for i in range(len(result.boxes)):
+                raw_count += 1
+                xyxy = result.boxes.xyxy[i].cpu().numpy()
+                all_raw_detections.append({
+                    "model_id": mid,
+                    "model_name": info["name"],
+                    "bbox": [float(xyxy[0]), float(xyxy[1]), float(xyxy[2]), float(xyxy[3])],
+                    "confidence": float(result.boxes.conf[i]),
+                    "class_id": int(result.boxes.cls[i]),
+                    "class_name": result.names[int(result.boxes.cls[i])],
+                    "color_bgr": info["color_bgr"],
+                    "color_hex": info["color_hex"],
+                })
+        model_counts[mid] = raw_count
+
+    final_detections = _cross_model_nms(all_raw_detections, iou_threshold=0.45)
+    consensus_count = sum(1 for d in final_detections if d.get("consensus", 1) > 1)
+
+    # Damage % — union of all bounding box areas relative to frame area
+    box_area = 0
+    for det in final_detections:
+        x1, y1, x2, y2 = det["bbox"]
+        box_area += max(0, x2 - x1) * max(0, y2 - y1)
+    damage_pct = min(100.0, (box_area / frame_area) * 100)
+
+    clean = []
+    for det in final_detections:
+        clean.append({
+            "model_id": det["model_id"],
+            "model_name": det["model_name"],
+            "class_name": det["class_name"],
+            "confidence": round(det["confidence"], 4),
+            "consensus": det.get("consensus", 1),
+            "agreeing_models": det.get("agreeing_models", [det["model_id"]]),
+            "bbox": [round(v, 1) for v in det["bbox"]],
+            "color_hex": det["color_hex"],
+        })
+
+    return {
+        "detections": clean,
+        "count": len(final_detections),
+        "model_counts": model_counts,
+        "consensus_detections": consensus_count,
+        "models_loaded": list(models.keys()),
+        "damage_pct": round(damage_pct, 2),
+    }
+
+
 def get_model_info() -> list[dict]:
     """Return metadata about all registered models for the UI."""
     info_list = []
