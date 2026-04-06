@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Detection Mode — Road Damage AI</title>
+	<meta name="description" content="Choose between live camera detection or image upload for road damage analysis.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<div class="page">
+
+	<!-- ── Top nav ─────────────────────────────────────────────── -->
+	<nav class="app-nav">
+		<a href="{{ url_for('landing') }}" class="nav-back">← Back</a>
+		<div class="nav-brand-small">
+			<span>🛣️</span>
+			<span>Road Damage AI</span>
+		</div>
+		<div class="nav-model-pills">
+			{% for m in models %}
+			<span class="model-pill" style="--mc: {{ m.color_hex }}">{{ m.short }}</span>
+			{% endfor %}
+		</div>
+	</nav>
+
+	<!-- ── Header ──────────────────────────────────────────────── -->
+	<header class="dash-header">
+		<p class="eyebrow">⚡ Choose Detection Mode</p>
+		<h1>How would you like to detect road damage?</h1>
+		<p class="lede">Select a mode below. Both use the full 3-model ensemble pipeline with cross-model consensus.</p>
+	</header>
+
+	<!-- ── Mode Cards ──────────────────────────────────────────── -->
+	<div class="mode-grid">
+
+		<!-- Live Camera Card -->
+		<div class="mode-card" id="mode-cam-card">
+			<div class="mode-card-header">
+				<div class="mode-icon cam-icon">📡</div>
+				<div class="mode-badge live-badge">
+					<span class="pulse-dot"></span>
+					Live
+				</div>
+			</div>
+			<h2 class="mode-title">Live Camera Detection</h2>
+			<p class="mode-desc">Use your device's webcam to detect road damage in real-time. Frames are analyzed every 2 seconds with running cumulative stats.</p>
+			<ul class="mode-features">
+				<li>✓ Real-time frame analysis</li>
+				<li>✓ Cumulative detection count</li>
+				<li>✓ Live damage area %</li>
+				<li>✓ Color-coded detection overlay</li>
+				<li>✓ Multi-model consensus tracking</li>
+			</ul>
+			<button class="mode-btn cam-btn" id="open-cam-btn" onclick="showCamPanel()">
+				Start Camera →
+			</button>
+		</div>
+
+		<!-- Image Upload Card -->
+		<div class="mode-card" id="mode-upload-card">
+			<div class="mode-card-header">
+				<div class="mode-icon upload-icon">🖼️</div>
+				<div class="mode-badge upload-badge">Single Shot</div>
+			</div>
+			<h2 class="mode-title">Image Upload</h2>
+			<p class="mode-desc">Upload a road photo (JPG / PNG) for a full ensemble analysis with a detailed detection table, confidence scores, and exportable results.</p>
+			<ul class="mode-features">
+				<li>✓ Full ensemble detection report</li>
+				<li>✓ Per-detection confidence scores</li>
+				<li>✓ Side-by-side comparison view</li>
+				<li>✓ Downloadable annotated image</li>
+				<li>✓ Damage class breakdown</li>
+			</ul>
+			<a href="{{ url_for('upload_page') }}" class="mode-btn upload-btn">
+				Upload Image →
+			</a>
+		</div>
+
+	</div>
+
+	<!-- ── Live Camera Panel (hidden by default) ─────────────── -->
+	<div id="cam-panel" class="cam-panel hidden">
+
+		<div class="cam-panel-header">
+			<h2>📡 Live Camera Detection</h2>
+			<button class="secondary" onclick="hideCamPanel()" id="close-cam-btn">✕ Close Camera</button>
+		</div>
+
+		<div class="cam-workspace">
+
+			<!-- Video + Overlay -->
+			<div class="cam-video-wrap">
+				<video id="cam-video" class="cam-video" autoplay playsinline muted></video>
+				<canvas id="cam-overlay" class="cam-overlay"></canvas>
+				<div class="cam-status-bar">
+					<span id="cam-status-dot" class="status-dot idle"></span>
+					<span id="cam-status-text">Camera not started</span>
+				</div>
+			</div>
+
+			<!-- Stats + Controls -->
+			<div class="cam-sidebar">
+
+				<div class="cam-stats-grid">
+					<div class="cam-stat-card accent-blue">
+						<div class="cam-stat-value" id="stat-total">0</div>
+						<div class="cam-stat-label">Total Detections</div>
+					</div>
+					<div class="cam-stat-card accent-orange">
+						<div class="cam-stat-value" id="stat-damage-pct">0.0%</div>
+						<div class="cam-stat-label">Damage Area</div>
+					</div>
+					<div class="cam-stat-card accent-green">
+						<div class="cam-stat-value" id="stat-frames">0</div>
+						<div class="cam-stat-label">Frames Analyzed</div>
+					</div>
+					<div class="cam-stat-card accent-yellow">
+						<div class="cam-stat-value" id="stat-consensus">0</div>
+						<div class="cam-stat-label">Consensus Hits</div>
+					</div>
+				</div>
+
+				<div class="cam-controls">
+					<button id="cam-start" class="primary cam-ctrl-btn">▶ Start</button>
+					<button id="cam-stop"  class="secondary cam-ctrl-btn" disabled>⏹ Stop</button>
+					<button id="cam-reset" class="secondary cam-ctrl-btn">↺ Reset</button>
+				</div>
+
+				<div class="cam-legend">
+					<p class="cam-legend-title">Model Colors</p>
+					{% for m in models %}
+					<div class="cam-legend-item">
+						<span class="cam-legend-dot" style="background: {{ m.color_hex }};"></span>
+						<span>Model {{ m.short }} — {{ m.name }}</span>
+					</div>
+					{% endfor %}
+					<div class="cam-legend-item">
+						<span>⭐</span>
+						<span>★ = Multi-model consensus</span>
+					</div>
+				</div>
+
+				<!-- Hidden canvas for frame capture -->
+				<canvas id="cam-capture" style="display:none;"></canvas>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/live_cam.js') }}"></script>
+<script>
+	function showCamPanel() {
+		document.getElementById('cam-panel').classList.remove('hidden');
+		document.getElementById('cam-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
+	function hideCamPanel() {
+		// Stop camera if running before closing
+		const stopBtn = document.getElementById('cam-stop');
+		if (!stopBtn.disabled) stopBtn.click();
+		document.getElementById('cam-panel').classList.add('hidden');
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+</script>
+</body>
+</html>

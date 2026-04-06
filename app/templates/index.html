@@ -3,127 +3,120 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Road Damage AI — Multi-Model Detection</title>
-	<meta name="description" content="AI-powered road damage detection using a 3-model YOLOv8 ensemble pipeline with cross-model consensus.">
+	<title>Upload Image — Road Damage AI</title>
+	<meta name="description" content="Upload a road image for multi-model ensemble pothole detection.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-	<div class="page">
-		<header class="hero">
-			<div>
-				<p class="eyebrow">⚡ Multi-Model Ensemble</p>
-				<h1>Road Damage AI</h1>
-				<p class="lede">Upload a road image and our 3-model YOLOv8 ensemble will detect potholes and road damage with cross-model consensus for high-confidence results.</p>
-			</div>
-		</header>
+<div class="page">
 
-		{% with messages = get_flashed_messages(with_categories=true) %}
-		{% if messages %}
-		<div class="flash-stack">
-			{% for category, message in messages %}
-			<div class="flash {{ category }}">{{ message }}</div>
+	<!-- ── Top nav ─────────────────────────────────────────────── -->
+	<nav class="app-nav">
+		<a href="{{ url_for('dashboard') }}" class="nav-back">← Back to Dashboard</a>
+		<div class="nav-brand-small">
+			<span>🛣️</span>
+			<span>Road Damage AI</span>
+		</div>
+		<div class="nav-model-pills">
+			{% for m in models %}
+			<span class="model-pill" style="--mc: {{ m.color_hex }}">{{ m.short }}</span>
 			{% endfor %}
 		</div>
-		{% endif %}
-		{% endwith %}
+	</nav>
 
-		<main class="card">
-			<form id="upload-form" action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data" class="upload-form">
-				<div id="drop-area" class="dropzone">
-					<div id="drop-default" class="drop-default">
-						<div class="drop-icon">📸</div>
-						<p class="drop-title">Drag & drop or click to browse</p>
-						<p class="muted">Accepts JPG or PNG — analyzed by 3 specialized models</p>
-					</div>
-					<div id="preview-container" class="preview-container">
-						<img id="preview-image" src="" alt="Preview">
-						<p id="preview-filename" class="preview-filename"></p>
-						<p class="muted">Click to change image</p>
-					</div>
-					<input id="file-input" type="file" name="file" accept="image/png, image/jpeg" required>
-				</div>
-				<button type="submit" id="submit-btn" class="primary">🔍 Analyze Road Damage</button>
-			</form>
+	<header class="hero">
+		<div>
+			<p class="eyebrow">🖼️ Image Upload</p>
+			<h1>Analyze a Road Image</h1>
+			<p class="lede">Upload a JPG or PNG road photo — all three models will analyze it simultaneously.</p>
+		</div>
+	</header>
 
-			<div class="models-section">
-				<h3>Ensemble Pipeline</h3>
-				<div class="model-grid">
-					{% for m in models %}
-					<div class="model-card">
-						<div class="model-dot {{ m.short | lower }}" style="background: {{ m.color_hex }}; color: {{ m.color_hex }};"></div>
-						<div class="model-card-info">
-							<span class="model-card-name">Model {{ m.short }} — {{ m.name }}</span>
-							<span class="model-card-detail">conf ≥ {{ m.conf }} · {{ '✓ loaded' if m.available else '✗ missing' }}</span>
-						</div>
-					</div>
-					{% endfor %}
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+	<div class="flash-stack">
+		{% for category, message in messages %}
+		<div class="flash {{ category }}">{{ message }}</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+	{% endwith %}
+
+	<main class="card">
+		<form id="upload-form" action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data" class="upload-form">
+			<div id="drop-area" class="dropzone">
+				<div id="drop-default" class="drop-default">
+					<div class="drop-icon">📸</div>
+					<p class="drop-title">Drag & drop or click to browse</p>
+					<p class="muted">Accepts JPG or PNG — analyzed by 3 specialized models</p>
 				</div>
+				<div id="preview-container" class="preview-container">
+					<img id="preview-image" src="" alt="Preview">
+					<p id="preview-filename" class="preview-filename"></p>
+					<p class="muted">Click to change image</p>
+				</div>
+				<input id="file-input" type="file" name="file" accept="image/png, image/jpeg" required>
 			</div>
-		</main>
-	</div>
+			<button type="submit" id="submit-btn" class="primary">🔍 Run Ensemble Detection</button>
+		</form>
 
-	<div id="loader" class="loader hidden">
-		<div class="spinner"></div>
-		<p>Running 3-model ensemble detection…</p>
-	</div>
+		<div class="models-section">
+			<h3>Active Models</h3>
+			<div class="model-grid">
+				{% for m in models %}
+				<div class="model-card">
+					<div class="model-dot" style="background: {{ m.color_hex }}; box-shadow: 0 0 8px {{ m.color_hex }};"></div>
+					<div class="model-card-info">
+						<span class="model-card-name">Model {{ m.short }} — {{ m.name }}</span>
+						<span class="model-card-detail">conf ≥ {{ m.conf }} · {{ '✓ loaded' if m.available else '✗ missing' }}</span>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</main>
+</div>
 
-	<script>
-		const dropArea = document.getElementById('drop-area');
-		const fileInput = document.getElementById('file-input');
-		const form = document.getElementById('upload-form');
-		const loader = document.getElementById('loader');
-		const dropDefault = document.getElementById('drop-default');
-		const previewContainer = document.getElementById('preview-container');
-		const previewImage = document.getElementById('preview-image');
-		const previewFilename = document.getElementById('preview-filename');
+<div id="loader" class="loader hidden">
+	<div class="spinner"></div>
+	<p>Running 3-model ensemble detection…</p>
+</div>
 
-		// Drag & drop visual feedback
-		['dragenter', 'dragover'].forEach(eventName => {
-			dropArea.addEventListener(eventName, (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				dropArea.classList.add('dragging');
-			});
-		});
+<script>
+	const dropArea = document.getElementById('drop-area');
+	const fileInput = document.getElementById('file-input');
+	const form = document.getElementById('upload-form');
+	const loader = document.getElementById('loader');
+	const dropDefault = document.getElementById('drop-default');
+	const previewContainer = document.getElementById('preview-container');
+	const previewImage = document.getElementById('preview-image');
+	const previewFilename = document.getElementById('preview-filename');
 
-		['dragleave', 'drop'].forEach(eventName => {
-			dropArea.addEventListener(eventName, (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				dropArea.classList.remove('dragging');
-			});
-		});
+	['dragenter', 'dragover'].forEach(e => {
+		dropArea.addEventListener(e, ev => { ev.preventDefault(); dropArea.classList.add('dragging'); });
+	});
+	['dragleave', 'drop'].forEach(e => {
+		dropArea.addEventListener(e, ev => { ev.preventDefault(); dropArea.classList.remove('dragging'); });
+	});
+	dropArea.addEventListener('drop', e => {
+		if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; showPreview(e.dataTransfer.files[0]); }
+	});
+	fileInput.addEventListener('change', () => { if (fileInput.files.length) showPreview(fileInput.files[0]); });
 
-		dropArea.addEventListener('drop', (e) => {
-			const files = e.dataTransfer.files;
-			if (files.length) {
-				fileInput.files = files;
-				showPreview(files[0]);
-			}
-		});
+	function showPreview(file) {
+		const reader = new FileReader();
+		reader.onload = e => {
+			previewImage.src = e.target.result;
+			previewFilename.textContent = file.name;
+			dropDefault.style.display = 'none';
+			previewContainer.classList.add('active');
+		};
+		reader.readAsDataURL(file);
+	}
 
-		// File input change → show preview
-		fileInput.addEventListener('change', () => {
-			if (fileInput.files.length) {
-				showPreview(fileInput.files[0]);
-			}
-		});
-
-		function showPreview(file) {
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				previewImage.src = e.target.result;
-				previewFilename.textContent = file.name;
-				dropDefault.style.display = 'none';
-				previewContainer.classList.add('active');
-			};
-			reader.readAsDataURL(file);
-		}
-
-		// Show loader on submit
-		form.addEventListener('submit', () => {
-			loader.classList.remove('hidden');
-		});
-	</script>
+	form.addEventListener('submit', () => loader.classList.remove('hidden'));
+</script>
 </body>
 </html>
