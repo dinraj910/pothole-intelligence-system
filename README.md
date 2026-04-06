@@ -1,115 +1,68 @@
-
 <div align="center">
 
-![Header](https://capsule-render.vercel.app/api?type=waving&height=200&color=0:1f7aec,100:0a1931&text=Pothole%20Detection%20System&fontColor=ffffff&fontSize=38&fontAlignY=35&desc=YOLOv8%20%2B%20Flask%20%7C%20Edge-ready&descAlignY=56)
+![Header](https://capsule-render.vercel.app/api?type=waving&height=200&color=0:1f7aec,100:0a1931&text=Road%20Damage%20AI&fontColor=ffffff&fontSize=42&fontAlignY=35&desc=Multi-Model%20YOLOv8%20Ensemble%20%7C%20Live%20Camera%20%26%20Image%20Analysis&descAlignY=56)
 
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge&logo=github)](#) 
 [![License](https://img.shields.io/badge/License-MIT-black?style=for-the-badge&logo=unlicense)](#license) 
-[![PRs](https://img.shields.io/badge/PRs-Welcome-orange?style=for-the-badge&logo=gitbook)](#contributing) 
-[![Maintained](https://img.shields.io/badge/Maintained-Yes-blue?style=for-the-badge&logo=dependabot)](#) 
+[![Deploy](https://img.shields.io/badge/Deploy-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](#-deployment) 
 
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](#tech-stack)
-[![Flask](https://img.shields.io/badge/Flask-2.x-black?style=for-the-badge&logo=flask)](#tech-stack)
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](#tech-stack)
+[![Flask](https://img.shields.io/badge/Flask-3.x-black?style=for-the-badge&logo=flask)](#tech-stack)
 [![Ultralytics](https://img.shields.io/badge/YOLOv8-Ultralytics-1f7aec?style=for-the-badge&logo=pythons)](#tech-stack)
-[![OpenCV](https://img.shields.io/badge/OpenCV-4.x-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](#tech-stack)
+[![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](#tech-stack)
 
-<img src="https://readme-typing-svg.demolab.com?font=Manrope&weight=700&size=24&pause=1200&color=1F7AEC&center=true&vCenter=true&random=false&width=800&lines=🚀+Real-time+pothole+detection+for+safer+roads;⚡+Low-confidence+recall+%28conf=0.05%29+for+edge+scenarios;🎯+Production-ready+Flask+web+app" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Manrope&weight=700&size=24&pause=1200&color=1F7AEC&center=true&vCenter=true&random=false&width=800&lines=🚀+3-Model+Consensus+Detection;📡+Real-time+Webcam+Inference;📊+Live+Damage+Area+Analytics;🎯+Production-ready+Flask+Architecture" alt="Typing SVG" />
 
 </div>
 
 ---
 
-## 🔗 Quick Navigation
-
-- [Overview](#-overview)
-- [Features](#-features)
-- [Architecture](#-architecture)
-- [Deep Dive](#-technical-deep-dive)
-- [Project Structure](#-project-structure)
-- [Quick Start](#-quick-start)
-- [Screenshots / Demo](#-screenshots--demo)
-- [Configuration](#-configuration)
-- [Tech Stack](#-tech-stack)
-- [Performance](#-performance-metrics)
-- [Roadmap](#-roadmap)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Author](#-author)
-- [Acknowledgments](#-acknowledgments)
-- [Show Your Support](#-show-your-support)
-
----
-
 ## 📖 Overview
 
-| What | Why |
-| --- | --- |
-| Web app that detects potholes in road images using a trained YOLOv8 model and surfaces annotated results. | Rapidly surface high-recall pothole detections to support road maintenance and smart mobility dashboards. |
+**Road Damage AI** is an advanced, multi-model ensemble pipeline built for scalable road quality inspection. It upgrades standard single-model pothole detection by running an ensemble of **three specialized YOLOv8 models** simultaneously. 
+
+By combining models trained on different points of view (Dashcam, Close-up, Street-level) using a cascaded transfer-learning strategy, the application achieves incredible recall and utilizes **Cross-Model Non-Maximum Suppression (NMS)** to track multi-model consensus and filter out false positives.
+
+Users can interface with the AI pipeline via a **Server-Side Rendered Image Upload Dashboard** or a **Live Camera Feed** that runs inference every 2 seconds without requiring client-side GPU power.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
 | ✅ | Capability |
 | --- | --- |
-| 🚀 | YOLOv8 inference with low confidence (0.05) to maximize recall in noisy real-world captures. |
-| ⚡ | Fast Flask API with secure upload handling and caching of model weights. |
-| 🖼️ | Automatic overlay of bounding boxes and side-by-side result view. |
-| 🛡️ | Strict file validation, flash messaging, and graceful error handling. |
-| 📁 | Organized static asset management (uploads/results) for traceability. |
-| 📊 | Ready for dashboard integration and further analytics. |
+| 🤖 | **3-Model YOLOv8 Ensemble:** RDD2022 (Dashcam), Pothole-600 (Close-up), Kaggle (Street). |
+| 🛡️ | **Consensus Tracking:** Overlapping bounding boxes are merged via cross-model NMS (IoU=0.45). Detections flagged by 2+ models earn a high-confidence consensus star. |
+| 📡 | **Live Camera Detection:** Uses the `MediaStream API` to capture webcam frames entirely in the browser, passing base64 JPEG blobs to `/api/live-frame` for seamless JS-driven live tracking. |
+| 📊 | **Damage Analytics:** Calculates cumulative damage counts and real-time damage area percentages. |
+| 🎨 | **Premium Dark-Mode UI:** Glassmorphism accents, live statistics counting, dynamic color-coded bounding boxes (🔴 Model A, 🟢 Model B, 🔵 Model C). |
+| 🚀 | **Production-Ready:** Optimized with `gunicorn` (1 worker) so all 3 models load only once into memory, perfectly tuned for Render's free tier. |
 
 ---
 
 ## 🏗️ Architecture
 
+```mermaid
+graph TD
+    A[Browser Client] -->|1. Image Upload /predict| B(Flask App Engine)
+    A -->|2. Webcam Frame /live-frame| B
+    
+    subgraph Multi-Model Ensemble [Singleton Inference Engine]
+        B --> C{Cross-Model Inference}
+        C -->|conf=0.05| M1[Model A: RDD2022 ]
+        C -->|conf=0.10| M2[Model B: Pothole-600 ]
+        C -->|conf=0.05| M3[Model C: Kaggle ]
+        
+        M1 --> N[Cross-Model NMS IoU=0.45]
+        M2 --> N
+        M3 --> N
+        N --> D[Consensus Scoring & Data Cleanup]
+    end
+
+    D --> E[Render cv2 Bounding Boxes]
+    E --> F[Generate JSON & Analytics]
+    F -->|Return HTML / JSON| A
 ```
-					+-----------------------+
-					|      Browser UI       |
-					|  (Upload & Results)   |
-					+----------+------------+
-										 |
-										 v
-					+----------+------------+
-					|      Flask App        |
-					|  Routes: / , /predict |
-					+----------+------------+
-										 |
-					 Secure upload & validate
-										 |
-										 v
-					+----------+------------+
-					|   YOLOv8 Inference    |
-					|  (Ultralytics, conf)  |
-					+----------+------------+
-										 |
-										 v
-					+----------+------------+
-					|  Result Overlay (cv2) |
-					+----------+------------+
-										 |
-										 v
-					+----------+------------+
-					|  Static Assets Store  |
-					|  uploads/ & results/  |
-					+-----------------------+
-```
-
----
-
-## 🔍 Technical Deep Dive
-
-<details>
-<summary>Click to expand</summary>
-
-- **Model Loading**: Singleton pattern via `functools.lru_cache` keeps YOLO weights hot-loaded.
-- **Inference Path**: Upload → secure filename → save → YOLO forward pass with `conf=0.05` → OpenCV render to results directory.
-- **Error Handling**: Flash messaging for missing/invalid files; guarded exceptions around model calls; temp cleanup on failure.
-- **Security**: Extension whitelist, `secure_filename`, isolated static folders, predictable paths.
-- **UX**: Drag-and-drop upload, loader overlay during inference, immediate result view.
-- **Extensibility**: Swap weights by replacing `app/model/best.pt`; adjust confidence/IoU in `detector.py`.
-
-</details>
 
 ---
 
@@ -118,21 +71,29 @@
 ```
 📦 Pothole-AI-System
 ├─ app/
-│  ├─ app.py
-│  ├─ model/                  # YOLO weights (best.pt)
+│  ├─ app.py                  # Core Flask routing & JSON APIs
+│  ├─ RoadDamageAI_Phase1/    
+│  │  └─ weights/             # 3 specialized YOLOv8 models
+│  │     ├─ model_a_rdd2022.pt
+│  │     ├─ model_b_pothole600.pt
+│  │     └─ model_c_kaggle.pt
+│  ├─ utils/
+│  │  └─ detector.py          # Array/Disk inference & NMS logic
 │  ├─ static/
-│  │  ├─ styles.css
-│  │  ├─ uploads/             # user uploads
-│  │  └─ results/             # annotated outputs
-│  ├─ templates/
-│  │  ├─ index.html
-│  │  └─ result.html
-│  └─ utils/
-│     └─ detector.py          # model loader + inference
-├─ notebook/                  # training/experiments
-│  └─ Pothole_Detection.ipynb
-├─ requirements.txt
-└─ README.md
+│  │  ├─ js/live_cam.js       # Webcam stream & API sync
+│  │  ├─ styles.css           # Global Dark Theme UI
+│  │  ├─ uploads/             # Ephemeral image uploads
+│  │  └─ results/             # Annotated output storage
+│  └─ templates/
+│     ├─ landing.html         # Hero page
+│     ├─ dashboard.html       # Mode Selector (Live vs Upload)
+│     ├─ index.html           # Upload Interface
+│     └─ result.html          # Detailed tabular analytics
+├─ notebook/
+│  └─ Road_Damage_MultiModel_Pipeline_final.ipynb # Source training
+├─ requirements.txt           # Dependencies
+├─ Procfile                   # Gunicorn config for Render
+└─ render.yaml                # Render Infrastructure-as-Code
 ```
 
 ---
@@ -141,24 +102,42 @@
 
 ### Prerequisites
 - Python 3.10+
-- pip
-- GPU optional (CPU works for demo; GPU recommended for speed)
+- `gunicorn` (for Unix environments)
 
-### Installation
+### Local Installation
 
-```bash
-git clone https://github.com/<your-username>/Pothole-AI-System.git
-cd Pothole-AI-System
-python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+1. **Clone and Setup Virtual Environment:**
+   ```bash
+   git clone https://github.com/<your-username>/Pothole-AI-System.git
+   cd Pothole-AI-System
+   python -m venv .venv
+   source .venv/bin/activate  # Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
 
-# Ensure the model is placed
-mkdir -p app/model
-cp app/models/best.pt app/model/best.pt  # or your own weights
+2. **Ensure Weights Are Present:**
+   Store your 3 trained YOLOv8 `.pt` models in `app/RoadDamageAI_Phase1/weights/`. 
 
-python app/app.py
-# Visit http://localhost:5000
-```
+3. **Run the Development Server:**
+   ```bash
+   cd app
+   python app.py
+   # Visit http://127.0.0.1:5000 in your browser
+   ```
+
+---
+
+## 🚀 Deployment (Render)
+
+This project includes a `Procfile` and `render.yaml` for one-click deployment on Render.
+
+**Important Note regarding Render's Free Tier:** 
+The application restricts `gunicorn` to `--workers 1`. This is done intentionally because keeping three YOLO models in memory consumes ~66MB, and spinning up multiple workers on a 512MB RAM free instance will cause out-of-memory (OOM) crashes.
+
+To deploy:
+1. Connect this repo to Render.
+2. The `render.yaml` blueprint will automatically detect the settings.
+3. Access your live app!
 
 ---
 
@@ -181,55 +160,11 @@ python app/app.py
 
 ---
 
-## ⚙️ Configuration
+## 🗺️ Roadmap (Phase 2 & 3)
 
-| Variable | Description | Default |
-| --- | --- | --- |
-| `SECRET_KEY` | Flask session/flash secret | set in `app.py` (change for prod) |
-| `UPLOAD_FOLDER` | Upload path | `app/static/uploads` |
-| `RESULT_FOLDER` | Annotated outputs | `app/static/results` |
-| `MODEL_PATH` | YOLO weights | `app/model/best.pt` |
-| `CONFIDENCE` | Detection threshold | `0.05` |
-
----
-
-## 🛠️ Tech Stack
-
-<div align="center">
-
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](#)
-[![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](#)
-[![Ultralytics](https://img.shields.io/badge/YOLOv8-1F7AEC?style=for-the-badge&logo=ai)](#)
-[![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](#)
-[![Pillow](https://img.shields.io/badge/Pillow-ffb400?style=for-the-badge&logo=python)](#)
-
-</div>
-
----
-
-## 📈 Performance Metrics
-
-| Metric | Value | Notes |
-| --- | --- | --- |
-| Inference latency | ~XX ms (CPU i7) | Update after benchmarking |
-| Precision | XX% | From validation run |
-| Recall | XX% | Emphasis on recall at conf=0.05 |
-| Model size | ~XX MB | YOLOv8 variant used |
-
-> Run your own eval and update the table for transparency.
-
----
-
-## 🗺️ Roadmap
-
-```mermaid
-graph LR
-	A[Current: Web Upload] --> B[API Endpoint /predict JSON]
-	B --> C[Batch Processing Queue]
-	C --> D[Edge Deployment (Jetson)]
-	D --> E[Dashboard with Metrics]
-	E --> F[Active Learning Loop]
-```
+- [ ] **Phase 2 — Severity Classification:** Train an additional CNN to classify the detected bounding boxes by severity (Small / Medium / Severe).
+- [ ] **Phase 3 — Location Intelligence:** Implement GPS EXIF extraction for image uploads and browser Geolocation API for the live camera to build dynamic pothole maps.
+- [ ] **DB Integration:** Migrate to PostgreSQL for maintaining historic detection logs.
 
 ---
 
@@ -241,56 +176,16 @@ graph LR
 4. Push to branch (`git push origin feature/awesome`)
 5. Open a Pull Request
 
-Please include tests or screenshots where applicable.
-
 ---
 
-## 📜 License
+## 📜 License & Acknowledgments
 
-Distributed under the MIT License. See `LICENSE` for details.
-
----
-
-## 👤 Author
-
-<div align="center">
-
-**Your Name**
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/your-profile)
-[![Portfolio](https://img.shields.io/badge/Portfolio-1f7aec?style=for-the-badge&logo=google-chrome&logoColor=white)](https://your-portfolio.com)
-[![Email](https://img.shields.io/badge/Email-Contact-orange?style=for-the-badge&logo=gmail&logoColor=white)](mailto:you@example.com)
-
-</div>
-
----
-
-## 🙏 Acknowledgments
-
-- Ultralytics for YOLOv8
-- OpenCV team
-- RDD2022 dataset contributors
-- Flask community
-
----
-
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=your-username/Pothole-AI-System&type=Date)](https://star-history.com/#your-username/Pothole-AI-System)
-
----
-
-## 💙 Show Your Support
-
-If you find this project useful:
-
-- ⭐ Star this repo
-- 🧠 Share feedback & ideas
-- 🐛 File issues for bugs or feature requests
+- Distributed under the MIT License.
+- Built using **Ultralytics YOLOv8**.
+- Datasets utilized: RDD2022, Pothole-600, Kaggle Pothole Dataset.
 
 <div align="center">
 
 ![Footer](https://capsule-render.vercel.app/api?type=waving&height=120&color=0:0a1931,100:1f7aec&section=footer)
 
 </div>
-
