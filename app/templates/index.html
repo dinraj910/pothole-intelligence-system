@@ -3,19 +3,17 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Pothole Detection System</title>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+	<title>Road Damage AI — Multi-Model Detection</title>
+	<meta name="description" content="AI-powered road damage detection using a 3-model YOLOv8 ensemble pipeline with cross-model consensus.">
 	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
 	<div class="page">
 		<header class="hero">
 			<div>
-				<p class="eyebrow">Smart Mobility</p>
-				<h1>Pothole Detection System</h1>
-				<p class="lede">Upload a road image and our YOLOv8 model will highlight potholes with high recall using a low confidence threshold.</p>
+				<p class="eyebrow">⚡ Multi-Model Ensemble</p>
+				<h1>Road Damage AI</h1>
+				<p class="lede">Upload a road image and our 3-model YOLOv8 ensemble will detect potholes and road damage with cross-model consensus for high-confidence results.</p>
 			</div>
 		</header>
 
@@ -32,21 +30,41 @@
 		<main class="card">
 			<form id="upload-form" action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data" class="upload-form">
 				<div id="drop-area" class="dropzone">
-					<div class="drop-icon">⬆</div>
-					<div>
-						<p class="drop-title">Drag & drop or browse</p>
-						<p class="muted">Accepts JPG or PNG. Low confidence detection is enabled.</p>
+					<div id="drop-default" class="drop-default">
+						<div class="drop-icon">📸</div>
+						<p class="drop-title">Drag & drop or click to browse</p>
+						<p class="muted">Accepts JPG or PNG — analyzed by 3 specialized models</p>
+					</div>
+					<div id="preview-container" class="preview-container">
+						<img id="preview-image" src="" alt="Preview">
+						<p id="preview-filename" class="preview-filename"></p>
+						<p class="muted">Click to change image</p>
 					</div>
 					<input id="file-input" type="file" name="file" accept="image/png, image/jpeg" required>
 				</div>
-				<button type="submit" class="primary">Detect Potholes</button>
+				<button type="submit" id="submit-btn" class="primary">🔍 Analyze Road Damage</button>
 			</form>
+
+			<div class="models-section">
+				<h3>Ensemble Pipeline</h3>
+				<div class="model-grid">
+					{% for m in models %}
+					<div class="model-card">
+						<div class="model-dot {{ m.short | lower }}" style="background: {{ m.color_hex }}; color: {{ m.color_hex }};"></div>
+						<div class="model-card-info">
+							<span class="model-card-name">Model {{ m.short }} — {{ m.name }}</span>
+							<span class="model-card-detail">conf ≥ {{ m.conf }} · {{ '✓ loaded' if m.available else '✗ missing' }}</span>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
 		</main>
 	</div>
 
 	<div id="loader" class="loader hidden">
 		<div class="spinner"></div>
-		<p>Running detection...</p>
+		<p>Running 3-model ensemble detection…</p>
 	</div>
 
 	<script>
@@ -54,7 +72,12 @@
 		const fileInput = document.getElementById('file-input');
 		const form = document.getElementById('upload-form');
 		const loader = document.getElementById('loader');
+		const dropDefault = document.getElementById('drop-default');
+		const previewContainer = document.getElementById('preview-container');
+		const previewImage = document.getElementById('preview-image');
+		const previewFilename = document.getElementById('preview-filename');
 
+		// Drag & drop visual feedback
 		['dragenter', 'dragover'].forEach(eventName => {
 			dropArea.addEventListener(eventName, (e) => {
 				e.preventDefault();
@@ -75,9 +98,29 @@
 			const files = e.dataTransfer.files;
 			if (files.length) {
 				fileInput.files = files;
+				showPreview(files[0]);
 			}
 		});
 
+		// File input change → show preview
+		fileInput.addEventListener('change', () => {
+			if (fileInput.files.length) {
+				showPreview(fileInput.files[0]);
+			}
+		});
+
+		function showPreview(file) {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				previewImage.src = e.target.result;
+				previewFilename.textContent = file.name;
+				dropDefault.style.display = 'none';
+				previewContainer.classList.add('active');
+			};
+			reader.readAsDataURL(file);
+		}
+
+		// Show loader on submit
 		form.addEventListener('submit', () => {
 			loader.classList.remove('hidden');
 		});

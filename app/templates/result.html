@@ -3,36 +3,126 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Detection Result</title>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+	<title>Detection Result — Road Damage AI</title>
+	<meta name="description" content="Road damage detection results from 3-model YOLOv8 ensemble analysis.">
 	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
 	<div class="page">
 		<header class="hero compact">
 			<div>
-				<p class="eyebrow">Result</p>
-				<h1>Detected Potholes</h1>
-				<p class="lede">Original vs. model output using YOLOv8 with conf=0.05.</p>
+				<p class="eyebrow">🔬 Analysis Complete</p>
+				<h1>Detection Results</h1>
+				<p class="lede">Multi-model ensemble output with cross-model consensus.</p>
 			</div>
-			<a href="{{ url_for('index') }}" class="secondary">Upload Another</a>
+			<a href="{{ url_for('index') }}" class="secondary">← New Analysis</a>
 		</header>
 
 		<main class="card results">
+
+			<!-- ── Summary Stats ─────────────────────────────────────── -->
+			<div class="stats-row">
+				<div class="stat-card">
+					<div class="stat-value accent">{{ count }}</div>
+					<div class="stat-label">Total Detections</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-value success">{{ consensus_detections }}</div>
+					<div class="stat-label">Consensus (2+ models)</div>
+				</div>
+				{% for m in models %}
+				{% if m.id in models_loaded %}
+				<div class="stat-card">
+					<div class="stat-value" style="color: {{ m.color_hex }}">{{ model_counts.get(m.id, 0) }}</div>
+					<div class="stat-label">Model {{ m.short }} Raw</div>
+				</div>
+				{% endif %}
+				{% endfor %}
+			</div>
+
+			<!-- ── Model Legend ───────────────────────────────────────── -->
+			<div class="legend">
+				{% for m in models %}
+				{% if m.id in models_loaded %}
+				<div class="legend-item">
+					<div class="legend-color" style="background: {{ m.color_hex }};"></div>
+					<span>Model {{ m.short }} — {{ m.name }}</span>
+				</div>
+				{% endif %}
+				{% endfor %}
+				<div class="legend-item">
+					<div class="legend-color" style="background: var(--warning);"></div>
+					<span>Thick border = multi-model consensus</span>
+				</div>
+			</div>
+
+			<!-- ── Image Comparison ───────────────────────────────────── -->
 			<div class="image-pair">
 				<div class="image-box">
 					<p class="muted">Original</p>
 					<img src="{{ original_image }}" alt="Original upload">
 				</div>
 				<div class="image-box">
-					<p class="muted">Detection</p>
-					<img src="{{ result_image }}" alt="Detection result">
+					<p class="muted">Ensemble Detection</p>
+					<img src="{{ result_image }}" alt="Multi-model detection result">
 				</div>
 			</div>
+
+			<!-- ── Detection Table ────────────────────────────────────── -->
+			{% if detections %}
+			<div class="detection-table-wrap">
+				<table class="detection-table" id="detection-table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Source Model</th>
+							<th>Damage Class</th>
+							<th>Confidence</th>
+							<th>Consensus</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for det in detections %}
+						<tr style="animation-delay: {{ loop.index * 0.04 }}s">
+							<td>{{ loop.index }}</td>
+							<td>
+								<span class="badge" style="background: {{ det.color_hex }}22; color: {{ det.color_hex }};">
+									● Model {{ det.model_id[-1] | upper }}
+								</span>
+							</td>
+							<td style="color: var(--text-primary); font-weight: 600;">{{ det.class_name }}</td>
+							<td>
+								<div class="confidence-bar">
+									<span>{{ "%.0f" | format(det.confidence * 100) }}%</span>
+									<div class="confidence-bar-track">
+										<div class="confidence-bar-fill" style="width: {{ det.confidence * 100 }}%"></div>
+									</div>
+								</div>
+							</td>
+							<td>
+								{% if det.consensus > 1 %}
+								<span class="badge consensus">★ {{ det.consensus }}/3 models</span>
+								{% else %}
+								<span style="color: var(--text-muted);">1/3</span>
+								{% endif %}
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			{% else %}
+			<div class="no-detections">
+				<div class="icon">🛣️</div>
+				<p>No road damage detected in this image.</p>
+				<p class="muted" style="margin-top: 6px;">Try uploading a different image with visible potholes or cracks.</p>
+			</div>
+			{% endif %}
+
+			<!-- ── Actions ────────────────────────────────────────────── -->
 			<div class="actions">
-				<a href="{{ url_for('index') }}" class="primary">Upload Another</a>
+				<a href="{{ url_for('index') }}" class="primary">🔍 Analyze Another Image</a>
+				<a href="{{ result_image }}" download class="secondary">⬇ Download Result</a>
 			</div>
 		</main>
 	</div>
