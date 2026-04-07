@@ -18,5 +18,5 @@ COPY . .
 ENV PORT=7860
 EXPOSE 7860
 
-# Run the app 
-CMD ["gunicorn", "--workers", "1", "--threads", "2", "--timeout", "120", "--bind", "0.0.0.0:7860", "app.app:app"]
+# Run the app — --chdir app puts app/ on Python path so 'utils' module is found
+CMD ["gunicorn", "--chdir", "app", "--workers", "1", "--threads", "2", "--timeout", "120", "--bind", "0.0.0.0:7860", "app:app"]
