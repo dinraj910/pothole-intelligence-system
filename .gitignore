@@ -2,7 +2,6 @@
 *.keras
 *.ckpt
 *.log
-*.pt
 *.onnx
 *.tflite
 *.torchscript
