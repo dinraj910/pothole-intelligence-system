@@ -1,3 +1,13 @@
+---
+title: Road Damage AI
+emoji: 🚦
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+app_port: 7860
+---
+
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=0:1f7aec,100:0a1931&text=Road%20Damage%20AI&fontColor=ffffff&fontSize=42&fontAlignY=35&desc=Multi-Model%20YOLOv8%20Ensemble%20%7C%20Live%20Camera%20and%20Image%20Analysis&descAlignY=56" alt="Header" />
 </p>
@@ -215,6 +225,8 @@ To deploy:
 - Distributed under the MIT License.
 - Built using **Ultralytics YOLOv8**.
 - Datasets utilized: RDD2022, Pothole-600, Kaggle Pothole Dataset.
+
+---
 
 <div align="center">
 
